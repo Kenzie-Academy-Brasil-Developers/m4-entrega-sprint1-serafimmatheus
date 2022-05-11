@@ -12,5 +12,5 @@ app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
 
 app.listen(PORT, () => {
-  console.log(`App rodando na porta n\http://localhost:${PORT}`);
+  console.log(`App rodando na porta \nhttp://localhost:${PORT}`);
 });

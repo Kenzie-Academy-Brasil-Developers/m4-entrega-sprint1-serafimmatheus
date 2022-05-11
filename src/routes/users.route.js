@@ -12,7 +12,7 @@ import { verifyAuthTokenMiddleware } from "../middlewares/verifyAuthToken.middle
 export const router = Router();
 
 router.get("", verifyAuthTokenMiddleware, getAllUserController);
-router.get("/:uuid", verifyAuthTokenMiddleware, getUserByUuidController);
+router.get("/profile", verifyAuthTokenMiddleware, getUserByUuidController);
 router.post("", verifyEmailAlreadyExistsMiddleware, createdUserController);
 router.put("/:uuid", verifyAuthTokenMiddleware, updatedUserController);
 router.delete("/:uuid", verifyAuthTokenMiddleware, deletedeUserController);

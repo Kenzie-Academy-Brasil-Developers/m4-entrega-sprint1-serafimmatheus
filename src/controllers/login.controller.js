@@ -5,5 +5,9 @@ export const loginUserController = (req, res) => {
 
   const loginUser = loginUserService(email, password);
 
-  return res.status(200).json(loginUser);
+  if (loginUser) {
+    return res.status(200).json({ token: loginUser });
+  } else {
+    return res.status(401).json({ message: "Wrong email/password" });
+  }
 };

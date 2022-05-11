@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from "bcryptjs";
 import { tableUser } from "../database/tableUser";
+import jwt from "jsonwebtoken";
 
 export const createdUserService = async (user) => {
   const { email, name, password, isAdm } = user;
@@ -42,8 +43,10 @@ export const getAllUserService = () => {
   return newUsers;
 };
 
-export const getUserByUuidService = (uuid) => {
-  const userFind = tableUser.find((user) => user.id === uuid);
+export const getUserByUuidService = (token) => {
+  const userAuth = jwt.decode(token);
+
+  const userFind = tableUser.find((user) => user.id === userAuth.findUser.id);
 
   if (!userFind) {
     return false;
@@ -52,16 +55,33 @@ export const getUserByUuidService = (uuid) => {
   return userFind;
 };
 
-export const updatedUserService = (uuid, email, name, isAdm) => {
+export const updatedUserService = (
+  uuid,
+  email,
+  name,
+  isAdm,
+  password,
+  token,
+  res
+) => {
   const findUserIndex = tableUser.findIndex((user) => user.id === uuid);
 
   if (findUserIndex === -1) {
     return false;
   }
 
+  const userAuth = jwt.decode(token);
+
+  if (!userAuth.findUser.isAdm) {
+    return res.status(401).json({ message: "Missing admin permissions" });
+  }
+
+  const passwordHashed = bcrypt.hashSync(password, 10);
+
   const userUpdate = {
     email: email.toLowerCase(),
     name: titleize(name),
+    password: passwordHashed,
     isAdm,
     updatedOn: new Date(),
   };
