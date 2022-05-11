@@ -91,14 +91,22 @@ export const updatedUserService = (
   return tableUser[findUserIndex];
 };
 
-export const deletedUserService = (uuid) => {
-  const userFindIndex = tableUser.findIndex((user) => user.id === uuid);
+export const deletedUserService = (uuid, token, res) => {
+  const userAuth = jwt.decode(token);
 
-  if (userFindIndex === -1) {
-    return false;
+  const findUserAuth = tableUser.find((user) => user.id === uuid);
+
+  if (findUserAuth.id === userAuth.findUser.id || userAuth.findUser.isAdm) {
+    const userFindIndex = tableUser.findIndex((user) => user.id === uuid);
+
+    if (userFindIndex === -1) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+
+    tableUser.splice(userFindIndex, 1);
+
+    return res.status(201);
   }
 
-  tableUser.splice(userFindIndex, 1);
-
-  return true;
+  return res.status(401).json({ message: "Missing admin permissions" });
 };

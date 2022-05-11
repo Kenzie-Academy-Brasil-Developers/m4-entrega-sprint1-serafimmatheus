@@ -57,8 +57,9 @@ export const updatedUserController = (req, res) => {
 
 export const deletedeUserController = (req, res) => {
   const { uuid } = req.params;
+  const token = req.headers.authorization;
 
-  const deletedUser = deletedUserService(uuid);
+  const deletedUser = deletedUserService(uuid, token, res);
 
   if (!deletedUser) {
     return res.status(404).json({ error: "User uuid not found!" });
