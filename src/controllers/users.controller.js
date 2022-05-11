@@ -22,9 +22,9 @@ export const getAllUserController = (_, res) => {
 };
 
 export const getUserByUuidController = (req, res) => {
-  const { uuid } = req.params;
+  const token = req.headers.authorization;
 
-  const userFind = getUserByUuidService(uuid);
+  const userFind = getUserByUuidService(token);
 
   if (userFind) {
     return res.status(200).json(userFind);
@@ -35,9 +35,18 @@ export const getUserByUuidController = (req, res) => {
 
 export const updatedUserController = (req, res) => {
   const { uuid } = req.params;
-  const { email, name, isAdm } = req.body;
+  const { email, name, isAdm, password } = req.body;
+  const token = req.headers.authorization;
 
-  const updatedUser = updatedUserService(uuid, email, name, isAdm);
+  const updatedUser = updatedUserService(
+    uuid,
+    email,
+    name,
+    isAdm,
+    password,
+    token,
+    res
+  );
 
   if (updatedUser) {
     return res.status(200).json(updatedUser);

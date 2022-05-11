@@ -6,13 +6,13 @@ export const loginUserService = (email, password) => {
   const findUser = tableUser.find((user) => user.email === email);
 
   if (!findUser) {
-    return "Email or password invalid";
+    return false;
   }
 
   const comparePassword = bcrypt.compare(password, findUser.password);
 
   if (!comparePassword) {
-    return "Email or password invalid";
+    return false;
   }
 
   const token = jwt.sign({ findUser }, "SECRET_KEY", { expiresIn: "1h" });
