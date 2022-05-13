@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from "bcryptjs";
 import { tableUser } from "../database/tableUser";
 import jwt from "jsonwebtoken";
+import { titleize } from "../utils/formatedNames.util";
+import { getUserUtil } from "../utils/getUser.util";
 
 export const createdUserService = async (user) => {
   const { email, name, password, isAdm } = user;
@@ -23,16 +25,17 @@ export const createdUserService = async (user) => {
   return newUser;
 };
 
-const titleize = (text) => {
-  let words = text.toLowerCase().split(" ");
-  for (let a = 0; a < words.length; a++) {
-    let w = words[a];
-    words[a] = w[0].toUpperCase() + w.slice(1);
-  }
-  return words.join(" ");
-};
+export const getAllUserService = ({ headers }) => {
+  const tokenUserAuth = jwt.decode(headers.authorization);
 
-export const getAllUserService = () => {
+  const userFindAdm = tableUser.find(
+    (user) => user.id === tokenUserAuth.findUser.id
+  );
+
+  if (!userFindAdm.isAdm) {
+    return false;
+  }
+
   const newUsers = [];
 
   for (let i = 0; i < tableUser.length; i++) {
@@ -55,40 +58,19 @@ export const getUserByUuidService = (token) => {
   return userFind;
 };
 
-export const updatedUserService = (
-  uuid,
-  email,
-  name,
-  isAdm,
-  password,
-  token,
-  res
-) => {
-  const findUserIndex = tableUser.findIndex((user) => user.id === uuid);
+export const updatedUserService = ({ body, params, headers, user }) => {
+  const userAuth = jwt.decode(headers.authorization);
 
-  if (findUserIndex === -1) {
+  const findUserAuth = tableUser.find(
+    (user) => user.id === userAuth.findUser.id
+  );
+
+  if (findUserAuth.isAdm) {
+    Object.assign(user, body);
+    return getUserUtil({ ...user, ...body });
+  } else {
     return false;
   }
-
-  const userAuth = jwt.decode(token);
-
-  if (!userAuth.findUser.isAdm) {
-    return res.status(401).json({ message: "Missing admin permissions" });
-  }
-
-  const passwordHashed = bcrypt.hashSync(password, 10);
-
-  const userUpdate = {
-    email: email.toLowerCase(),
-    name: titleize(name),
-    password: passwordHashed,
-    isAdm,
-    updatedOn: new Date(),
-  };
-
-  tableUser[findUserIndex] = { ...tableUser[findUserIndex], ...userUpdate };
-
-  return tableUser[findUserIndex];
 };
 
 export const deletedUserService = (uuid, token, res) => {

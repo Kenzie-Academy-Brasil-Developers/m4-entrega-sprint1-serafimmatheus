@@ -12,6 +12,6 @@ export const verifyAuthTokenMiddleware = (req, res, next) => {
       return res.status(401).json({ message: "Missing authorization headers" });
     }
 
-    next();
+    return next();
   });
 };

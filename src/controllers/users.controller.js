@@ -15,8 +15,12 @@ export const createdUserController = async (req, res) => {
   res.status(201).json(createdUser);
 };
 
-export const getAllUserController = (_, res) => {
-  const getAllUsers = getAllUserService();
+export const getAllUserController = (req, res) => {
+  const getAllUsers = getAllUserService(req);
+
+  if (!getAllUsers) {
+    return res.status(401).json({ message: "Missing admin permissions" });
+  }
 
   res.status(200).json(getAllUsers);
 };
@@ -34,25 +38,13 @@ export const getUserByUuidController = (req, res) => {
 };
 
 export const updatedUserController = (req, res) => {
-  const { uuid } = req.params;
-  const { email, name, isAdm, password } = req.body;
-  const token = req.headers.authorization;
+  const updatedUser = updatedUserService(req);
 
-  const updatedUser = updatedUserService(
-    uuid,
-    email,
-    name,
-    isAdm,
-    password,
-    token,
-    res
-  );
-
-  if (updatedUser) {
-    return res.status(200).json(updatedUser);
-  } else {
-    return res.status(404).json({ error: "User uuid not found!" });
+  if (!updatedUser) {
+    return res.status(401).json({ message: "Missing admin permissions" });
   }
+
+  return res.status(200).json(updatedUser);
 };
 
 export const deletedeUserController = (req, res) => {

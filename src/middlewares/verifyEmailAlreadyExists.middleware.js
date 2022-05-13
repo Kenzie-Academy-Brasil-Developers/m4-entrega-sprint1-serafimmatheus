@@ -11,5 +11,5 @@ export const verifyEmailAlreadyExistsMiddleware = (req, res, next) => {
     return res.status(409).json({ message: "E-mail already registered" });
   }
 
-  next();
+  return next();
 };

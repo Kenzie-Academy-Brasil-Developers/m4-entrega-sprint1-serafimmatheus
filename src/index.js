@@ -8,8 +8,8 @@ const PORT = 5001;
 
 app.use(express.json());
 
-app.use("/api/users", userRouter);
-app.use("/api/login", loginRouter);
+app.use("/users", userRouter);
+app.use("/login", loginRouter);
 
 app.listen(PORT, () => {
   console.log(`App rodando na porta \nhttp://localhost:${PORT}`);
