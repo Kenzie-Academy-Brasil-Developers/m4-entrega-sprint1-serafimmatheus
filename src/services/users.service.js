@@ -59,18 +59,21 @@ export const getUserByUuidService = (token) => {
 };
 
 export const updatedUserService = ({ body, params, headers, user }) => {
-  const userAuth = jwt.decode(headers.authorization);
+  // const userAuth = jwt.decode(headers.authorization);
 
-  const findUserAuth = tableUser.find(
-    (user) => user.id === userAuth.findUser.id
-  );
+  // const findUserAuth = tableUser.find(
+  //   (user) => user.id === userAuth.findUser.id
+  // );
 
-  if (findUserAuth.isAdm) {
-    Object.assign(user, body);
-    return getUserUtil({ ...user, ...body });
-  } else {
-    return false;
-  }
+  // if (findUserAuth.isAdm) {
+  //   Object.assign(user, body);
+  //   return getUserUtil({ ...user, ...body });
+  // } else {
+  //   return false;
+  // }
+
+  Object.assign(user, body);
+  return getUserUtil({ ...user, ...body });
 };
 
 export const deletedUserService = (uuid, token, res) => {
